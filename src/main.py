@@ -82,7 +82,6 @@ def list_vpcs_and_subnets(request):
     cursor = db_connection.cursor()
 
     create_table_if_not_exists(cursor)
-    vpcs, subnets = query_gcp_vpcs_and_subnets()
 
     vpcs, all_subnets = query_gcp_vpcs_and_subnets()
     html_output = format_as_html(vpcs, all_subnets)
