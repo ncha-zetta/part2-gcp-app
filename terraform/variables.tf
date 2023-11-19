@@ -23,5 +23,4 @@ variable "app_bucket_name" {
 
 variable "zip_file" {
   description = "Zip file name"
-  default     = "function.zip"
 }
