@@ -12,10 +12,6 @@ variable "region" {
   default     = "us-east1"
 }
 
-variable "commit_sha" {
-  description = "Commit hash"
-}
-
 ##############################################
 # App
 ##############################################
