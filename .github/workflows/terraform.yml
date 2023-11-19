@@ -45,4 +45,4 @@ jobs:
         propagate_failure: true
         trigger_workflow: true
         wait_workflow: true
-        github-token: ${{ secrets.PART2_GCP_TERRAFORM_TOKEN }}
+        github_token: ${{ secrets.PART2_GCP_TERRAFORM_TOKEN }}
