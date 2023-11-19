@@ -34,7 +34,7 @@ def query_gcp_vpcs_and_subnets():
     vpcs = vpcs_response.get('items', [])
 
     # Query Subnets
-    subnets_request = service.subnetworks().list(project=project, region='your-region')
+    subnets_request = service.subnetworks().list(project=project, region='us-east1')
     subnets_response = subnets_request.execute()
     subnets = subnets_response.get('items', [])
 
