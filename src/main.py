@@ -1,5 +1,8 @@
+from datetime import datetime
+
 import googleapiclient.discovery
 import google.auth
+import pytz
 import pymysql
 import os
 
@@ -78,14 +81,20 @@ def format_as_html(vpcs, all_subnets):
 
     return html_output
 
+def datetime_to_iso8601(datetime_str):
+    dt = datetime.fromisoformat(datetime_str.replace("Z", "+00:00"))
+    dt = dt.astimezone(pytz.utc)
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
+
 def save_to_database(cursor, vpcs, all_subnets):
     cursor.execute("DELETE FROM network_info")
 
     for vpc in vpcs:
+        formatted_timestamp = datetime_to_iso8601(vpc['creationTimestamp'])
         cursor.execute("""
             INSERT INTO network_info (resource_type, name, creation_timestamp)
             VALUES (%s, %s, %s)
-            """, ('vpc', vpc['name'], vpc['creationTimestamp']))
+            """, ('vpc', vpc['name'], formatted_timestamp))
 
     for subnet in all_subnets:
         cursor.execute("""
