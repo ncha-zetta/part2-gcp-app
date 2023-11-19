@@ -32,7 +32,7 @@ jobs:
     
     - name: Trigger workflow in another repository
       if: github.ref == 'refs/heads/main'
-      uses: ncha-zetta/part2-gcp-terraform@main
+      uses: convictional/trigger-workflow-and-wait@v1.6.1
       with:
         owner: ncha-zetta
         repo: part2-gcp-terraform
