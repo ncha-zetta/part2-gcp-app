@@ -8,10 +8,9 @@ resource "google_storage_bucket_object" "zip" {
   source       = data.archive_file.source.output_path
   content_type = "application/zip"
   name         = "part2_cloud_function.zip"
-  bucket       = google_storage_bucket.app_bucket.name
+  bucket       = var.app_bucket_name
 
   depends_on = [
-    google_storage_bucket.app_bucket,
     data.archive_file.source
   ]
 }
