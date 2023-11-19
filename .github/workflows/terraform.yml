@@ -10,6 +10,7 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+    working-directory: ./terraform
     env:
       GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
