@@ -2,7 +2,7 @@ import pymysql
 import os
 
 def get_db_connection():
-    host = os.environ.get('DB_HOST')
+    host = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
     user = os.environ.get('DB_USER')
     password = os.environ.get('DB_PASSWORD')
     db_name = os.environ.get('DB_NAME')
