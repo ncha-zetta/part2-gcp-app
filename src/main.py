@@ -6,4 +6,4 @@ def list_vpcs_and_subnets(request):
     request_json = request.get_json(silent=True)
     # request_args = request.args # GET args 
 
-    return request_json
+    return "TEST 1, 2, 3"
