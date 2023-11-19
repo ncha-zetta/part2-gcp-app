@@ -12,6 +12,10 @@ variable "region" {
   default     = "us-east1"
 }
 
+variable "commit_sha" {
+  description = "Commit hash"
+}
+
 ##############################################
 # App
 ##############################################
@@ -19,4 +23,9 @@ variable "region" {
 variable "app_bucket_name" {
   description = "App bucket name"
   default     = "part2-app"
+}
+
+variable "zip_file" {
+  description = "Zip file name"
+  default     = "function.zip"
 }

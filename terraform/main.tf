@@ -7,7 +7,7 @@ data "archive_file" "source" {
 resource "google_storage_bucket_object" "zip" {
   source       = data.archive_file.source.output_path
   content_type = "application/zip"
-  name         = "part2_cloud_function.zip"
+  name         = var.zip_file
   bucket       = var.app_bucket_name
 
   depends_on = [

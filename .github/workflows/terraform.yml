@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      TF_VAR_COMMIT_SHA: ${{ github.sha::7 }}
 
     steps:
     - name: Checkout
@@ -19,6 +20,9 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
+
+    - name: Set ZIP File Name
+      run: echo "TF_VAR_ZIP_FILE=part2_cloud_function.${{ github.sha[:7] }}.zip" >> $GITHUB_ENV
 
     - name: Terraform Init
       run: terraform init
@@ -46,3 +50,4 @@ jobs:
         trigger_workflow: true
         wait_workflow: true
         github_token: ${{ secrets.PART2_GCP_TERRAFORM_TOKEN }}
+        client_payload: "{\"TF_VAR_ZIP_FILE\": \"${{ env.TF_VAR_ZIP_FILE }}\"}"
