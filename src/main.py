@@ -28,17 +28,54 @@ def query_gcp_vpcs_and_subnets():
     credentials, project = google.auth.default()
     service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
 
+    # Query all regions
+    regions_request = service.regions().list(project=project)
+    regions_response = regions_request.execute()
+    regions = regions_response.get('items', [])
+
     # Query VPCs
     vpcs_request = service.networks().list(project=project)
     vpcs_response = vpcs_request.execute()
     vpcs = vpcs_response.get('items', [])
+    vpc_map = {vpc['selfLink']: vpc['name'] for vpc in vpcs}
 
-    # Query Subnets
-    subnets_request = service.subnetworks().list(project=project, region='us-east1')
-    subnets_response = subnets_request.execute()
-    subnets = subnets_response.get('items', [])
+    all_subnets = []
+    for region in regions:
+        region_name = region['name']
 
-    return vpcs, subnets
+        subnets_request = service.subnetworks().list(project=project, region=region_name)
+        subnets_response = subnets_request.execute()
+        subnets = subnets_response.get('items', [])
+
+        for subnet in subnets:
+            subnet_vpc_name = vpc_map.get(subnet['network'])
+            subnet_info = {
+                "name": subnet['name'],
+                "vpc": subnet_vpc_name,
+                "region": region_name
+            }
+            all_subnets.append(subnet_info)
+
+    return vpcs, all_subnets
+
+def format_as_html(vpcs, all_subnets):
+    html_output = "<html><body>"
+    html_output += "<h1>VPCs and Subnets</h1>"
+
+    for vpc in vpcs:
+        html_output += f"<h2>VPC: {vpc['name']}</h2>"
+        html_output += "<ul>"
+
+        for subnet in all_subnets:
+            if subnet['vpc'] == vpc['name']:
+                html_output += f"<li>Subnet: {subnet['name']} in {subnet['region']}</li>"
+
+        html_output += "</ul>"
+
+    html_output += "</body></html>"
+
+    return html_output
+
 
 def list_vpcs_and_subnets(request):
     db_connection = get_db_connection()
@@ -47,11 +84,12 @@ def list_vpcs_and_subnets(request):
     create_table_if_not_exists(cursor)
     vpcs, subnets = query_gcp_vpcs_and_subnets()
 
-    vpcs_str = "\n".join([f"VPC Name: {vpc['name']}, Creation Timestamp: {vpc['creationTimestamp']}" for vpc in vpcs])
-    subnets_str = "\n".join([f"Subnet Name: {subnet['name']}, Region: {subnet['region']}" for subnet in subnets])
+    vpcs, all_subnets = query_gcp_vpcs_and_subnets()
+    html_output = format_as_html(vpcs, all_subnets)
 
     # save_to_database(cursor, vpcs, subnets)
 
     cursor.close()
     db_connection.close()
-    return f"VPCs:\n{vpcs_str}\n-------------\nSUBNETS:\n{subnets_str}\n\n------------\nFunction execution completed !!!"
+
+    return html_output
