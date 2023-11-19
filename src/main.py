@@ -78,6 +78,22 @@ def format_as_html(vpcs, all_subnets):
 
     return html_output
 
+def save_to_database(cursor, vpcs, all_subnets):
+    cursor.execute("DELETE FROM network_info")
+
+    for vpc in vpcs:
+        cursor.execute("""
+            INSERT INTO network_info (resource_type, name, creation_timestamp)
+            VALUES (%s, %s, %s)
+            """, ('vpc', vpc['name'], vpc['creationTimestamp']))
+
+    for subnet in all_subnets:
+        cursor.execute("""
+            INSERT INTO network_info (resource_type, name, vpc, region, creation_timestamp)
+            VALUES (%s, %s, %s, %s, NULL)
+            """, ('subnet', subnet['name'], subnet['vpc'], subnet['region']))
+
+    cursor.connection.commit()
 
 def list_vpcs_and_subnets(request):
     db_connection = get_db_connection()
@@ -86,9 +102,9 @@ def list_vpcs_and_subnets(request):
     create_table_if_not_exists(cursor)
 
     vpcs, all_subnets = query_gcp_vpcs_and_subnets()
+    save_to_database(cursor, vpcs, all_subnets)
+    
     html_output = format_as_html(vpcs, all_subnets)
-
-    # save_to_database(cursor, vpcs, subnets)
 
     cursor.close()
     db_connection.close()
