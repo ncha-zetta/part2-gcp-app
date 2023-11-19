@@ -19,6 +19,8 @@ def create_table_if_not_exists(cursor):
         id INT AUTO_INCREMENT PRIMARY KEY,
         resource_type VARCHAR(255),
         name VARCHAR(255),
+        vpc VARCHAR(255) DEFAULT NULL,
+        region VARCHAR(255) DEFAULT NULL,
         creation_timestamp DATETIME
     )
     """
