@@ -1,9 +1,20 @@
+import pymysql
+import os
+
+def get_db_connection():
+    host = os.environ.get('DB_HOST')
+    user = os.environ.get('DB_USER')
+    password = os.environ.get('DB_PASSWORD')
+    db_name = os.environ.get('DB_NAME')
+
+    return pymysql.connect(host=host, user=user, password=password, db=db_name)
+
 def list_vpcs_and_subnets(request):
-    """
-    Responds to an HTTP request with a simple 'Hello World' message.
-    """
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
 
-    request_json = request.get_json(silent=True)
-    # request_args = request.args # GET args 
+    create_table_if_not_exists(cursor)
 
-    return "TEST 1, 2, 3"
+    cursor.close()
+    db_connection.close()
+    return 'Function execution completed !!!'
