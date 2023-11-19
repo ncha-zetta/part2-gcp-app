@@ -1,0 +1,45 @@
+name: 'Terraform'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply -auto-approve
+    
+    - name: Trigger workflow in another repository
+      if: github.ref == 'refs/heads/main'
+      uses: ncha-zetta/part2-gcp-terraform@main
+      with:
+        owner: ncha-zetta
+        repo: part2-gcp-terraform
+        workflow_file_name: terraform.yml
+        ref: main
+        wait_interval: 10
+        propagate_failure: true
+        trigger_workflow: true
+        wait_workflow: true
+        github-token: ${{ secrets.PART2_GCP_TERRAFORM_TOKEN }}
