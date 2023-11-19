@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-      TF_VAR_ZIP_FILE: part2_cloud_function.${GITHUB_SHA::7}.zip
+      TF_VAR_ZIP_FILE: part2_cloud_function.${{ env.GITHUB_SHA::7 }}.zip
     
     steps:
     - name: Checkout
